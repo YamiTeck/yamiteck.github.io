@@ -1,0 +1,1 @@
+# yamiteck.github.io
