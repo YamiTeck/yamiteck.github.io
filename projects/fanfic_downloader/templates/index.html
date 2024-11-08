@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk FanFic Downloader</title>
+</head>
+<body>
+    <h1>Bulk FanFic Downloader</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form method="POST" action="/">
+        <label for="story_urls">FanFiction.net Story URLs (one per line):</label><br>
+        <textarea name="story_urls" id="story_urls" rows="10" cols="50" required></textarea>
+        <br><br>
+        <label for="format">Format:</label>
+        <select name="format" id="format">
+            <option value="epub">EPUB</option>
+            <option value="mobi">MOBI</option>
+            <option value="html">HTML</option>
+        </select>
+        <br><br>
+        <button type="submit">Download All</button>
+    </form>
+</body>
+</html>

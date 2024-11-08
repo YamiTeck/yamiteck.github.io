@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body style="background-color:rgb(80, 125, 187);">
+    <p>Enter your grade (0-100) to see your letter grade:</p>
+    <input type="number" id="gradeInput" min="0" max="100" placeholder="Enter grade">
+    <button onclick="calculateGrade()">Calculate</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        function calculateGrade() {
+            const grade = parseInt(document.getElementById("gradeInput").value);
+            let letterGrade;
+
+            if (isNaN(grade) || grade < 0 || grade > 100) {
+                letterGrade = "Please enter a valid grade between 0 and 100.";
+            } else if (grade >= 90) {
+                letterGrade = "A";
+            } else if (grade >= 80) {
+                letterGrade = "B";
+            } else if (grade >= 70) {
+                letterGrade = "C";
+            } else if (grade >= 60) {
+                letterGrade = "D";
+            } else {
+                letterGrade = "F";
+            }
+
+            document.getElementById("result").textContent = `Your letter grade is: ${letterGrade}`;
+        }
+    </script>
+</body>
+</html>

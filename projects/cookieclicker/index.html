@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cookie Clicker</title>
+  </head>
+  <body>
+    <div id="app">
+      <div class="game-container">
+        <h1>Cookie Clicker</h1>
+        <div class="stats">
+          <div class="cookies">Cookies: <span id="cookie-count">0</span></div>
+          <div class="cps">Per Second: <span id="cps">0</span></div>
+        </div>
+        <div class="cookie-container">
+          <img id="cookie" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Cookie.png/220px-Cookie.png" alt="Cookie">
+        </div>
+        <div class="upgrades">
+          <div class="upgrade" id="cursor">
+            <h3>Cursor</h3>
+            <p>Cost: <span class="cost">15</span></p>
+            <p>Owned: <span class="owned">0</span></p>
+            <button onclick="buyUpgrade('cursor')">Buy</button>
+          </div>
+          <div class="upgrade" id="grandma">
+            <h3>Grandma</h3>
+            <p>Cost: <span class="cost">100</span></p>
+            <p>Owned: <span class="owned">0</span></p>
+            <button onclick="buyUpgrade('grandma')">Buy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Schematics Scraper</title>
+    <style>
+        /* Basic styling for better UX */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1, h2 { color: #4CAF50; }
+        label { display: inline-block; margin-bottom: 8px; }
+        input { margin-bottom: 10px; padding: 5px; width: 200px; }
+        button { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        #status { margin-top: 20px; color: #f44336; }
+        #history-list { margin-top: 10px; list-style-type: none; }
+        #loading-spinner { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Minecraft Schematic Downloader</h1>
+    <p>Note: Schematic IDs 7, 19, 25, and 34 are unavailable.</p>
+    
+    <!-- Single Schematic Download Section -->
+    <h2>Download a Single Schematic</h2>
+    <label for="single-id">Enter schematic ID:</label>
+    <input type="number" id="single-id" min="1">
+    <button id="download-single">Download Schematic</button>
+    
+    <!-- Multiple Schematic Download Section -->
+    <h2>Download Multiple Schematics</h2>
+    <label for="starting-id">Enter starting schematic ID:</label>
+    <input type="number" id="starting-id" value="1824" min="1">
+    
+    <label for="ending-id">Enter ending schematic ID:</label>
+    <input type="number" id="ending-id" value="1830" min="1">
+    
+    <!-- Customizable Delay -->
+    <label for="delay">Set delay between downloads (milliseconds):</label>
+    <input type="number" id="delay" value="2000" min="0">
+
+    <button id="set-range">Set Range</button>
+    <button id="start-download">Start Downloading Schematics</button>
+    
+    <p id="status"></p>
+    <div id="loading-spinner">Loading...</div>
+
+    <!-- Download History Section -->
+    <h2>Download History</h2>
+    <ul id="history-list"></ul>
+    <button id="clear-history">Clear History</button>
+
+    <script>
+        const statusElement = document.getElementById("status");
+        const loadingSpinner = document.getElementById("loading-spinner");
+        let currentId, endId, delay = 2000, isDownloading = false;
+
+        // Load history from local storage
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem("downloadHistory")) || [];
+            const historyList = document.getElementById("history-list");
+            historyList.innerHTML = ""; // Clear previous entries
+            history.forEach(id => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `Schematic ID: ${id}`;
+                historyList.appendChild(listItem);
+            });
+        }
+
+        // Save an ID to the download history in local storage
+        function saveToHistory(id) {
+            let history = JSON.parse(localStorage.getItem("downloadHistory")) || [];
+            if (!history.includes(id)) {
+                history.push(id);
+                localStorage.setItem("downloadHistory", JSON.stringify(history));
+                loadHistory(); // Update display
+            }
+        }
+
+        // Clear the download history
+        document.getElementById("clear-history").addEventListener("click", () => {
+            localStorage.removeItem("downloadHistory");
+            loadHistory();
+        });
+
+        // Helper function to validate ID
+        function isValidId(id) {
+            return !isNaN(id) && id > 0;
+        }
+
+        // Open a single schematic
+        function downloadSingleSchematic() {
+            const singleId = parseInt(document.getElementById("single-id").value);
+            if (isValidId(singleId)) {
+                const url = `https://www.minecraft-schematics.com/schematic/${singleId}/download/action/?type=schematic`;
+                window.open(url, "_blank");
+                statusElement.innerText = `Opened schematic ID: ${singleId}`;
+                saveToHistory(singleId); // Save to history
+            } else {
+                statusElement.innerText = "Please enter a valid schematic ID.";
+            }
+        }
+
+        // Set the range when the button is clicked
+        document.getElementById("set-range").addEventListener("click", () => {
+            const startingId = parseInt(document.getElementById("starting-id").value);
+            const endingId = parseInt(document.getElementById("ending-id").value);
+            delay = parseInt(document.getElementById("delay").value) || 2000;
+
+            if (isValidId(startingId) && isValidId(endingId) && startingId <= endingId) {
+                currentId = startingId;
+                endId = endingId;
+                statusElement.innerText = `Range set: ${currentId} to ${endId}, with ${delay}ms delay.`;
+            } else {
+                statusElement.innerText = "Please enter a valid range.";
+            }
+        });
+
+        // Open the next schematic in the range
+        function openNextSchematic() {
+            if (currentId <= endId) {
+                const url = `https://www.minecraft-schematics.com/schematic/${currentId}/download/action/?type=schematic`;
+                window.open(url, "_blank");
+                statusElement.innerText = `Opened schematic ID: ${currentId}`;
+                saveToHistory(currentId); // Save to history
+                currentId++; // Move to the next schematic
+
+                // Delay between downloads based on user input
+                setTimeout(openNextSchematic, delay);
+            } else {
+                statusElement.innerText = "All schematics in the range have been opened.";
+                isDownloading = false;
+                loadingSpinner.style.display = "none";
+            }
+        }
+
+        // Start downloading schematics when the button is clicked
+        document.getElementById("start-download").addEventListener("click", () => {
+            if (!isDownloading && currentId && endId && currentId <= endId) {
+                isDownloading = true;
+                statusElement.innerText = "Starting downloads...";
+                loadingSpinner.style.display = "block"; // Show loading spinner
+                openNextSchematic();
+            } else if (isDownloading) {
+                statusElement.innerText = "Download in progress, please wait.";
+            } else {
+                statusElement.innerText = "Please set a valid range before starting.";
+            }
+        });
+
+        // Download a single schematic when the button is clicked
+        document.getElementById("download-single").addEventListener("click", downloadSingleSchematic);
+
+        // Load history on page load
+        loadHistory();
+    </script>
+</body>
+</html>

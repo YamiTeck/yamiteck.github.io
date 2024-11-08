@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Random Number Generator</title>
+    <style>
+        #history {
+            margin-top: 15px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        #error {
+            color: red;
+            font-weight: bold;
+        }
+        .preset-button {
+            margin: 5px;
+        }
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        /* Color coding for different ranges */
+        .low-range {
+            color: green;
+        }
+        .mid-range {
+            color: orange;
+        }
+        .high-range {
+            color: red;
+        }
+    </style>
+</head>
+<body style="background-color:rgb(80, 125, 187);">
+    <h1>Advanced Random Number Generator</h1>
+
+    <!-- Range Input with Preset Buttons -->
+    <label for="min">Min:</label>
+    <input type="number" id="min" value="1">
+    <label for="max">Max:</label>
+    <input type="number" id="max" value="100">
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" value="1" min="1">
+    <button onclick="generateRandomNumbers()">Generate</button>
+    <p id="result">Your random number will appear here.</p>
+    <p id="error"></p>
+
+    <!-- Preset Range Buttons -->
+    <div>
+        <button class="preset-button" onclick="setRange(1, 10)">1 - 10</button>
+        <button class="preset-button" onclick="setRange(1, 100)">1 - 100</button>
+        <button class="preset-button" onclick="setRange(100, 1000)">100 - 1000</button>
+    </div>
+
+    <!-- Auto-generation with Delay -->
+    <label for="delay">Auto-generate every (ms):</label>
+    <input type="number" id="delay" value="1000">
+    <button onclick="startAutoGenerate()">Start Auto-Generate</button>
+    <button onclick="stopAutoGenerate()">Stop Auto-Generate</button>
+
+    <!-- Statistics Section -->
+    <div id="statistics">
+        <h3>Statistics:</h3>
+        <p id="average">Average: N/A</p>
+        <p id="sum">Sum: N/A</p>
+        <p id="mostFrequent">Most Frequent Number: N/A</p>
+    </div>
+
+    <!-- Export Options -->
+    <label for="customText">Add a custom line of text:</label>
+    <input type="text" id="customText" placeholder="Enter custom text here">
+    <button onclick="exportHistory()">Save & Export</button>
+    <button onclick="exportHistoryAsCSV()">Save as CSV</button>
+    <button onclick="exportHistoryAsJSON()">Save as JSON</button>
+
+    <!-- History and Actions -->
+    <div id="history">
+        <h3>History:</h3>
+        <ul id="historyList"></ul>
+        <button onclick="clearHistory()">Clear History</button>
+        <button onclick="copyHistory()">Copy History to Clipboard</button>
+    </div>
+
+    <script>
+        let history = [];
+        let autoGenerateInterval;
+
+        function generateRandomNumbers() {
+            const min = parseInt(document.getElementById('min').value);
+            const max = parseInt(document.getElementById('max').value);
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const errorElement = document.getElementById('error');
+            const resultElement = document.getElementById('result');
+
+            if (isNaN(min) || isNaN(max) || min >= max || isNaN(quantity) || quantity < 1) {
+                errorElement.textContent = "Please enter valid numbers, with Min < Max and quantity >= 1.";
+                return;
+            } else {
+                errorElement.textContent = "";
+            }
+
+            // Rolling effect for animation
+            resultElement.textContent = 'Rolling...';
+            let rollingCount = 0;
+            const animation = setInterval(() => {
+                rollingCount = Math.floor(Math.random() * (max - min + 1)) + min;
+                resultElement.textContent = `Rolling: ${rollingCount}`;
+            }, 50);
+
+            setTimeout(() => {
+                clearInterval(animation);
+                const numbers = Array.from({ length: quantity }, () => Math.floor(Math.random() * (max - min + 1)) + min);
+                displayResults(numbers);
+            }, 1000);
+        }
+
+        function displayResults(numbers) {
+            const resultElement = document.getElementById('result');
+            const historyList = document.getElementById('historyList');
+
+            // Display numbers with color coding
+            resultElement.innerHTML = `Random Numbers: ${numbers.map(number => {
+                if (number <= 0.33 * parseInt(document.getElementById('max').value)) {
+                    return `<span class="low-range">${number}</span>`;
+                } else if (number <= 0.66 * parseInt(document.getElementById('max').value)) {
+                    return `<span class="mid-range">${number}</span>`;
+                } else {
+                    return `<span class="high-range">${number}</span>`;
+                }
+            }).join(', ')}`;
+
+            const now = new Date();
+            const timestamp = now.toLocaleString();
+            numbers.forEach((num) => {
+                history.push(num);
+                const listItem = document.createElement('li');
+                listItem.textContent = `${num} (Generated at: ${timestamp})`;
+                historyList.appendChild(listItem);
+            });
+
+            updateStatistics();
+        }
+
+        function startAutoGenerate() {
+            const delay = parseInt(document.getElementById('delay').value);
+            if (isNaN(delay) || delay <= 0) {
+                alert("Please enter a valid delay time in milliseconds.");
+                return;
+            }
+            stopAutoGenerate();
+            autoGenerateInterval = setInterval(generateRandomNumbers, delay);
+        }
+
+        function stopAutoGenerate() {
+            clearInterval(autoGenerateInterval);
+        }
+
+        function setRange(min, max) {
+            document.getElementById('min').value = min;
+            document.getElementById('max').value = max;
+        }
+
+        function clearHistory() {
+            history = [];
+            document.getElementById('historyList').innerHTML = '';
+            updateStatistics();
+        }
+
+        function copyHistory() {
+            const historyItems = Array.from(document.getElementById('historyList').getElementsByTagName('li'))
+                .map(item => item.textContent);
+            const historyText = historyItems.join('\n');
+            navigator.clipboard.writeText(historyText)
+                .then(() => alert("History copied to clipboard!"))
+                .catch(err => alert("Failed to copy: " + err));
+        }
+
+        function exportHistory() {
+            const customText = document.getElementById('customText').value;
+            const historyItems = Array.from(document.getElementById('historyList').getElementsByTagName('li'))
+                .map(item => item.textContent);
+            const content = `${customText}\n\nHistory of Generated Numbers:\n` + historyItems.join('\n');
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'RandomNumberHistory.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportHistoryAsCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Number,Generated At\n";
+            const historyItems = Array.from(document.getElementById('historyList').getElementsByTagName('li'));
+
+            historyItems.forEach((item) => {
+                const [number, generatedAt] = item.textContent.split(" (Generated at: ");
+                csvContent += `${number},${generatedAt.replace(")", "")}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "RandomNumberHistory.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportHistoryAsJSON() {
+            const historyItems = Array.from(document.getElementById('historyList').getElementsByTagName('li')).map((item) => {
+                const [number, generatedAt] = item.textContent.split(" (Generated at: ");
+                return { number: parseInt(number), generatedAt: generatedAt.replace(")", "") };
+            });
+            const blob = new Blob([JSON.stringify(historyItems, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "RandomNumberHistory.json";
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function updateStatistics() {
+            if (history.length === 0) return;
+
+            const sum = history.reduce((acc, num) => acc + num, 0);
+            const average = (sum / history.length).toFixed(2);
+            const frequency = {};
+            let mostFrequent = history[0];
+            history.forEach(num => {
+                frequency[num] = (frequency[num] || 0) + 1;
+                if (frequency[num] > (frequency[mostFrequent] || 0)) {
+                    mostFrequent = num;
+                }
+            });
+
+            document.getElementById('average').textContent = `Average: ${average}`;
+            document.getElementById('sum').textContent = `Sum: ${sum}`;
+            document.getElementById('mostFrequent').textContent = `Most Frequent Number: ${mostFrequent}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{Block:{name:"minecraft:moving_block",states:{},version:17959425},Count:1b,Damage:0s,Name:"minecraft:moving_block",WasPickedUp:0b
+,tag:{display:{Lore:["Â§lÂ§bTemplate By: Â§dKitty Shizzî„€","Â§fSpecial Thanks To:","Â§6Chronicles765!!    î„ƒ","Â§4Warning: Â§cDont Hold Too","Â§cMany Or You Will Lag!!Â§âˆ†"]
+,Name:"Â§lÂ§dKittys Â§gÂ§lTemplate"},ench:[{id:28s,lvl:1s}],movingBlock:{name:"minecraft:sea_lantern",states:{},version:17879555},movingEntity:{Occupants:[{ActorIdentifier:"minecraft:npc<>",SaveData:{Actions:"
+[
+	{
+		"button_name" : "Â§9Button 1 Name",
+		"data" : 
+[
+		{"cmd_line":"/tickingarea add circle ~ ~ ~ 4 Temp","cmd_ver":12},
+		{"cmd_line":"setblock ~ ~ ~ stone","cmd_ver":12},
+		{"cmd_line":"/tickingarea remove Temp","cmd_ver":12},
+		{"cmd_line":"/kill @s","cmd_ver":12}
+],
+		"mode" : 0,
+		"text" : "",
+		"type" : 1
+},
+{
+		"button_name" : "Â§cButton 2 Name",
+        "data" : 
+[
+		{"cmd_line":"/tickingarea add circle ~ ~ ~ 4 Temp","cmd_ver":12},
+		{"cmd_line":"setblock ~ ~ ~ stone","cmd_ver":12},
+		{"cmd_line":"/tickingarea remove Temp","cmd_ver":12},
+		{"cmd_line":"/kill @s","cmd_ver":12}
+],
+		"mode" : 0,
+        "text" : "Â§cMade by Kitty Shizz",
+        "type" : 1
+}
+]"
+,CustomName:"Â§lÂ§dKittys Template"
+,CustomNameVisible:1b
+,InterativeText:"Â§cTemplate By: Â§dKitty Shizz!!î„€
+Â§cThanks To: Â§9@Determinated#0738
+Â§cSpecial Thanks To: Â§6Chronicles765!!! î„ƒ",Persistent:1b,Pos:[],RawtextName:"Â§lÂ§dKittys Template",Tags:["Template1"],Variant:57,definitions:["+minecraft:npc"],identifier:"minecraft:npc"},TicksLeftToStay:0}],id:"Beehive"}}}
